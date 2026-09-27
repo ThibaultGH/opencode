@@ -13,6 +13,7 @@ import PROMPT_GENERATE from "./generate.txt"
 import PROMPT_COMPACTION from "./prompt/compaction.txt"
 import PROMPT_EXPLORE from "./prompt/explore.txt"
 import PROMPT_SUMMARY from "./prompt/summary.txt"
+import PROMPT_TEACH from "./prompt/teach.txt"
 import PROMPT_TITLE from "./prompt/title.txt"
 import { Permission } from "@/permission"
 import { mergeDeep, pipe, sortBy, values } from "remeda"
@@ -214,6 +215,33 @@ const layer = Layer.effect(
             prompt: PROMPT_EXPLORE,
             options: {},
             mode: "subagent",
+            native: true,
+          },
+          teach: {
+            name: "teach",
+            description:
+              "Teach mode. A pedagogical, read-only agent that explains code and concepts for guided learning without editing files, running commands, or delegating to subagents.",
+            prompt: PROMPT_TEACH,
+            permission: Permission.merge(
+              defaults,
+              Permission.fromConfig({
+                "*": "deny",
+                read: "allow",
+                glob: "allow",
+                grep: "allow",
+                list: "allow",
+                question: "allow",
+                webfetch: "allow",
+                websearch: "allow",
+                edit: {
+                  [path.join(Global.Path.data, "teach", "*")]: "allow",
+                  [path.join(".opencode", "teach", "*.md")]: "allow",
+                },
+              }),
+              user,
+            ),
+            options: {},
+            mode: "primary",
             native: true,
           },
           compaction: {
